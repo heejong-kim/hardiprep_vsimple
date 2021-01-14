@@ -1122,9 +1122,9 @@ def PerformDWIBaselineReferenceMotionCorrection(prepDir,phan_name,
     fbase = niifilename.split('.')[0]
     bvalsfilename = fbase + '.bvals'
     bvalcount = len(open(bvalsfilename).readlines())
-    mcParamFolder = os.path.join(mcOutDir, 'antsmat2fsl_out.mat')
-    if not os.path.exists(mcParamFolder):
-        os.mkdir(mcParamFolder)
+    # mcParamFolder = os.path.join(mcOutDir, 'antsmat2fsl_out.mat')
+    # if not os.path.exists(mcParamFolder):
+    #     os.mkdir(mcParamFolder)
 
     if not os.path.exists(niifilename_for_ants_out):
         dwisplitname = os.path.join(fbase, 'dwi')
@@ -1146,9 +1146,9 @@ def PerformDWIBaselineReferenceMotionCorrection(prepDir,phan_name,
             subprocess.Popen(antsCommand,
                              shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
-            matants2fslCommand = '/home/heejong/HDD2T/utils/c3d-1.1.0-Linux-x86_64/bin/c3d_affine_tool -itk {} -ref {} -src {} -ras2fsl -o {} '.format(outname+'0GenericAffine.mat',dwibaseline_fixed,dwi_moving,mcParamFolder + '/MAT_'+str(idx).zfill(4))
-            subprocess.Popen(matants2fslCommand,
-                             shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
+            # matants2fslCommand = '/home/heejong/HDD2T/utils/c3d-1.1.0-Linux-x86_64/bin/c3d_affine_tool -itk {} -ref {} -src {} -ras2fsl -o {} '.format(outname+'0GenericAffine.mat',dwibaseline_fixed,dwi_moving,mcParamFolder + '/MAT_'+str(idx).zfill(4))
+            # subprocess.Popen(matants2fslCommand,
+            #                  shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
 
         outname_ = os.path.join(mcOutDir,'dwi*'+'_warped.nii.gz')
