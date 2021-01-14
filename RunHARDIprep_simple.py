@@ -558,10 +558,3 @@ if __name__ == "__main__":
 
 
 
-prepDir = '/home/heejong/Desktop/436524/V36/HARDIprep_QC_SHORE'
-phanname = '436524_V36'
-phan_name = phanname
-resampling_method = 'shore'
-nDirections = 65
-
-#/home/heejong/HDD2T/utils/c3d-1.1.0-Linux-x86_64/bin/
