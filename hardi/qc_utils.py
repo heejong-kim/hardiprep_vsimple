@@ -157,16 +157,16 @@ def RunMCFLIRT(niifilename_for_mcflirt, niifilename_corrected, interpMethod, cos
         outname = niifilename_corrected.split('.nii')[0]
 
     # now go ahead and do motion correction
-    if interpMethod is 'trilinear':
+    if interpMethod == 'trilinear':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 6 -stages 4 -verbose 1 -stats -mats -plots -report'
 
-    if interpMethod is 'nn':
+    if interpMethod == 'nn':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 6 -nn_final -stages 4 -verbose 1 -stats -mats -plots -report'
 
-    if interpMethod is 'sinc':
+    if interpMethod == 'sinc':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 6 -sinc_final -stages 4 -verbose 1 -stats -mats -plots -report'
 
-    if interpMethod is 'spline':
+    if interpMethod == 'spline':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 6 -spline_final -stages 4 -verbose 1 -stats -mats -plots -report'
 
     subprocess.Popen(cmdStr, shell=True).wait()
@@ -179,16 +179,16 @@ def RunMCFLIRT_12DOF(niifilename_for_mcflirt, niifilename_corrected, interpMetho
     elif niifilename_corrected.split('.')[-1] == 'nii':
         outname = niifilename_corrected.split('.nii')[0]
     # now go ahead and do motion correction
-    if interpMethod is 'trilinear':
+    if interpMethod == 'trilinear':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 12 -stages 4 -verbose 1 -stats -mats -plots -report'
 
-    if interpMethod is 'nn':
+    if interpMethod == 'nn':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 12 -nn_final -stages 4 -verbose 1 -stats -mats -plots -report'
 
-    if interpMethod is 'sinc':
+    if interpMethod == 'sinc':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 12 -sinc_final -stages 4 -verbose 1 -stats -mats -plots -report'
 
-    if interpMethod is 'spline':
+    if interpMethod == 'spline':
         cmdStr = 'mcflirt -in ' + niifilename_for_mcflirt[0:-4] + ' -out ' + outname + ' -cost ' + cost + ' -refvol 0 -dof 12 -spline_final -stages 4 -verbose 1 -stats -mats -plots -report'
 
     subprocess.Popen(cmdStr, shell=True).wait()

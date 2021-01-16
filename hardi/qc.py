@@ -1151,15 +1151,17 @@ def PerformDWIBaselineReferenceMotionCorrection(prepDir,phan_name,
             #                  shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
 
+        fslmergecommand = 'fslmerge -t {} {}'.format(niifilename_for_ants_out, fcollect)
+        subprocess.Popen(fslmergecommand,
+                         shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
+
         outname_ = os.path.join(mcOutDir,'dwi*'+'_warped.nii.gz')
         cmdStr = 'rm -rf %s' % (outname_)
         # os.system(cmdStr)
         subprocess.Popen(cmdStr,
                          shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
-        fslmergecommand = 'fslmerge -t {} {}'.format(niifilename_for_ants_out, fcollect)
-        subprocess.Popen(fslmergecommand,
-                         shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
+
 
     # quantify the current motion
     if not os.path.exists(reportfilename):
