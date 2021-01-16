@@ -8,19 +8,11 @@ QC utilities to be called from qc
 """
 
 from __future__ import division
-import numpy as np
 import os
-import time
-import shutil
 import copy
-import ntpath
-import glob
 from scipy.io import loadmat
 
-import nibabel as nib
-
 import hardi.io as hardiIO
-import nrrd
 
 import nipype.interfaces.fsl as fsl
 # from fsl.wrappers import bet
@@ -31,16 +23,11 @@ mat = np.matrix
 cos = np.cos
 sin = np.sin
 
-import math
 import csv
 
 from dipy.tracking import utils
 from dipy.tracking import metrics
 import scipy.optimize
-
-#import matplotlib.pyplot as pl
-from scipy import ndimage
-from sklearn.cluster import KMeans
 
 
 # To deal with os.system does not wait for the process

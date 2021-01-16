@@ -14,25 +14,17 @@ Modified as hardi_vsimple Dec 21 2020
 from __future__ import division
 import os
 import glob
-import numpy as np
-import ntpath
-import time
-import sys
 
-import subprocess
-from dipy.io.gradients import read_bvals_bvecs
-
-import nrrd
-import hardi.io as hardiIO
 import hardi.qc as hardiQC
-
 import argparse
 from joblib import Parallel, delayed
 
-def hardiprep_vsimple(nrrdfilename, subjname, outDir, nDirections, prepDir_suffix, resampling_method, xmlfilename):
+def hardiprep_vsimple(nrrdfilename, phanname, outDir, nDirections, prepDir_suffix, resampling_method, xmlfilename, check_btable=False):
 
     if not os.path.exists(nrrdfilename):
-        sys.exit("MISSING INPUT NRRD FILE")
+        print("MISSING INPUT NRRD FILE")
+        # sys.exit("MISSING INPUT NRRD FILE")
+        return
     else:
 
         print("===================================")
@@ -54,9 +46,11 @@ def hardiprep_vsimple(nrrdfilename, subjname, outDir, nDirections, prepDir_suffi
         (3) convert them to nifti and generate the btable for dsi_studio visualization
         
         """
-        prepDir, fixednrrdfilename, bvalbveczeroflag = hardiQC.PrepareQCsession(origNrrdfilename, outDir, phanname, prepDir_suffix,nDirections, check_btable=True)
+        prepDir, fixednrrdfilename, bvalbveczeroflag = hardiQC.PrepareQCsession(origNrrdfilename, outDir, phanname, prepDir_suffix,nDirections, check_btable=check_btable)
         if bvalbveczeroflag:
-            sys.exit("NO BVALUES BVECTORS or LESS THAN 6 GRADIENTS IN NRRD FILE")
+            # sys.exit("NO BVALUES BVECTORS or LESS THAN 6 GRADIENTS IN NRRD FILE")
+            print("NO BVALUES BVECTORS or LESS THAN 6 GRADIENTS IN NRRD FILE")
+            return
 
         """
         ---------------------------------------------------------------------------------
@@ -70,7 +64,9 @@ def hardiprep_vsimple(nrrdfilename, subjname, outDir, nDirections, prepDir_suffi
 
         baselineexcludeflag = hardiQC.RunDTIPrepStage( prepDir, phanname, xmlfilename, nDirections)
         if baselineexcludeflag:
-            sys.exit("NO BASELINE")
+            # sys.exit("NO BASELINE")
+            print("NO BASELINE")
+            return
 
 
         """
@@ -111,7 +107,9 @@ def hardiprep_vsimple(nrrdfilename, subjname, outDir, nDirections, prepDir_suffi
                                                                           nDirections)
 
         if lessgradientflag:
-            sys.exit("LESS THAN 6 GRADIENTS INPUT FOR RESAMPLING STEP")
+            # sys.exit("LESS THAN 6 GRADIENTS INPUT FOR RESAMPLING STEP")
+            print("LESS THAN 6 GRADIENTS INPUT FOR RESAMPLING STEP")
+            return
 
         """
         # ---------------------------------------------------------------------------------
@@ -161,7 +159,7 @@ def hardiprep_vsimple(nrrdfilename, subjname, outDir, nDirections, prepDir_suffi
         #                                                           resampling_method, nDirections, check_btable=True)
 
         hardiQC.BrainMaskDWIBaselineReferenceMotionCorrectedDWIupdate(prepDir, phanname, resampling_method,
-                                                  nDirections, check_btable = True)
+                                                  nDirections, check_btable = check_btable)
 
 
 
@@ -181,11 +179,9 @@ if __name__ == "__main__":
     prepDir_suffix = 'SHORE'
     resampling_method = 'shore'
     xmlfilename = './IBIS_DTIPrep_PROTOCOL_simple.xml'
-    useBrainMask = False
 
 
-    # for sidx in range(len(nrrd_idgroups)):
-    for sidx in range(1,2):
+    for sidx in range(len(nrrd_idgroups)):
 
         print("=======================")
         print(" {} out of {} ".format(sidx, len(nrrd_idgroups)))
@@ -204,5 +200,6 @@ if __name__ == "__main__":
         resampling_method = 'shore'
         xmlfilename = './IBIS_DTIPrep_PROTOCOL_simple.xml'
         phanname = ID + '_' + agegroup
+        check_btable = True
 
-        hardiprep_vsimple(origNrrdfilename, phanname, outDir, nDirections, prepDir_suffix, resampling_method, xmlfilename)
+        hardiprep_vsimple(origNrrdfilename, phanname, outDir, nDirections, prepDir_suffix, resampling_method, xmlfilename, check_btable=check_btable)

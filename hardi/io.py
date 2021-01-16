@@ -9,12 +9,8 @@ objective:
 
 """
 
-import nrrd
 import numpy as np
 import csv
-# import pyevtk.hl as evtk
-import pickle
-import fnmatch
 import os
 import scipy.io as sio
 import copy

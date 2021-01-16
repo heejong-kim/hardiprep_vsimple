@@ -32,11 +32,6 @@ from dipy.io.gradients import read_bvals_bvecs
 import subprocess
 
 
-
-dtiprepbin = '/home/users/hk2451/Utils/DTIPrep-1.2.11/bin/' # server
-dtiprepbin = '/home/heejong/HDD2T/utils/DTIPrep-1.2.11/bin/' # local
-
-
 def ParseFilename(nrrdfilename):
     _, filename = ntpath.split(nrrdfilename)
     # basename     = filename[:-len(ext)]
@@ -131,10 +126,9 @@ def PrepareQCsession(origNrrdfilename, outDir, phan_name, prepDir_suffix=None, n
     if check_btable:
         recfilename = glob.glob(srcfilename+'.*')
         if len(recfilename) == 0:
-            dsistudiopath = '/media/HDD2T/utils/dsistudio/dsi-studio-2018/dsi_studio_64/dsi_studio'
             # method 0:DSI, 1:DTI, 2:Funk-Randon QBI, 3:Spherical Harmonic QBI, 4:GQI 6: Convert to HARDI 7:QSDR.
-            cmdcheckbtable ='{} --action=rec --source={} --method=1 --check_btable={}'.format(dsistudiopath,
-                                                                                      srcfilename, check_btable)
+            cmdcheckbtable = 'dsistudio --action=rec --source={} --method=1 --check_btable={}'.format(srcfilename, check_btable)
+
             subprocess.Popen(cmdcheckbtable,
                              shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
@@ -185,7 +179,7 @@ def RunDTIPrepStage(prepDir, phan_name, xmlfilename, nDirections=65):
     QCReportfilename = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir_DTIPrepQCReport.txt' % (
     nDirections, phan_name, nDirections))
 
-    cmdStr = dtiprepbin + 'DTIPrep --DWINrrdFile %s --xmlProtocol %s --check --outputFolder %s' % (
+    cmdStr = 'DTIPrep --DWINrrdFile %s --xmlProtocol %s --check --outputFolder %s' % (
         nrrdfilename, xmlfilename, os.path.join(prepDir, 'DWI_%ddir' % (nDirections)))
     # os.system(cmdStr)
     if not os.path.exists(qcnrrdfilename) or not os.path.exists(QCReportfilename):
@@ -774,7 +768,7 @@ def RerunDTIPrepStage(prepDir, phan_name, xmlfilename, resampling_method, nDirec
                                        nDirections, phan_name, nDirections, resampling_method.upper()))
 
     if not os.path.exists(nrrdfilename_qc) or not os.path.exists(QCReportfilename):
-        cmdStr = dtiprepbin + 'DTIPrep --DWINrrdFile %s --xmlProtocol %s --check --outputFolder %s' % (
+        cmdStr = 'DTIPrep --DWINrrdFile %s --xmlProtocol %s --check --outputFolder %s' % (
             nrrdfilename, xmlfilename, os.path.join(prepDir, 'DWI_%ddir' % (nDirections)))
         # os.system(cmdStr)
         subprocess.Popen(cmdStr,
@@ -842,7 +836,7 @@ def RerunDTIPrepStage(prepDir, phan_name, xmlfilename, resampling_method, nDirec
                                   'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_Resample%s_QCed.src.gz' % (
                                       nDirections, phan_name, nDirections, resampling_method.upper()))
 
-    cmdStr = dtiprepbin + 'DTIPrep --DWINrrdFile %s --xmlProtocol %s --check --outputFolder %s' % (
+    cmdStr = 'DTIPrep --DWINrrdFile %s --xmlProtocol %s --check --outputFolder %s' % (
         nrrdfilename, xmlfilename, os.path.join(prepDir, 'DWI_%ddir' % (nDirections)))
     # os.system(cmdStr)
     if not os.path.exists(nrrdfilename_qc):
@@ -1689,10 +1683,8 @@ def BrainMaskDWIBaselineReferenceMotionCorrectedDWIupdate(prepDir, phan_name, re
     if check_btable:
         recfilename = glob.glob(srcfilename_MC_masked+'.*')
         # if len(recfilename) == 0:
-        dsistudiopath = '/media/HDD2T/utils/dsistudio/dsi-studio-2018/dsi_studio_64/dsi_studio'
         # method 0:DSI, 1:DTI, 2:Funk-Randon QBI, 3:Spherical Harmonic QBI, 4:GQI 6: Convert to HARDI 7:QSDR.
-        cmdcheckbtable ='{} --action=rec --source={} --method=1 --check_btable={}'.format(dsistudiopath,
-                                                                                  srcfilename_MC_masked, check_btable)
+        cmdcheckbtable ='dsistudio --action=rec --source={} --method=1 --check_btable={}'.format(srcfilename_MC_masked, check_btable)
         subprocess.Popen(cmdcheckbtable,
                          shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
@@ -1823,10 +1815,9 @@ def BrainMaskDWIGeometricMeanMotionCorrectedDWIupdate(prepDir, phan_name, resamp
     if check_btable:
         recfilename = glob.glob(srcfilename_MC_masked+'.*')
         # if len(recfilename) == 0:
-        dsistudiopath = '/media/HDD2T/utils/dsistudio/dsi-studio-2018/dsi_studio_64/dsi_studio'
         # method 0:DSI, 1:DTI, 2:Funk-Randon QBI, 3:Spherical Harmonic QBI, 4:GQI 6: Convert to HARDI 7:QSDR.
-        cmdcheckbtable ='{} --action=rec --source={} --method=1 --check_btable={}'.format(dsistudiopath,
-                                                                                  srcfilename_MC_masked, check_btable)
+        cmdcheckbtable ='dsistudio --action=rec --source={} --method=1 --check_btable={}'.format(srcfilename_MC_masked, check_btable)
+
         subprocess.Popen(cmdcheckbtable,
                          shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
