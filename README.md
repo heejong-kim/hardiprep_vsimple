@@ -39,5 +39,6 @@ export PATH=$PATH:$DTIPrepDIR:$FSLDIR:$ANTsDIR:$DSIStudioDIR
 
 ## References
 [1] Elhabian, Shireen, et al. "Subject–motion correction in HARDI acquisitions: choices and consequences." Frontiers in neurology 5 (2014): 240.
+
 [2] Elhabian, Shireen, et al. "Compressive sensing based Q-space resampling for handling fast bulk motion in hardi acquisitions." 2016 IEEE 13th International Symposium on Biomedical Imaging (ISBI). IEEE, 2016.
 
