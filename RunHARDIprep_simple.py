@@ -16,8 +16,7 @@ import os
 import glob
 
 import hardi.qc as hardiQC
-import argparse
-from joblib import Parallel, delayed
+# from joblib import Parallel, delayed
 
 def hardiprep_vsimple(nrrdfilename, phanname, outDir, nDirections, prepDir_suffix, resampling_method, xmlfilename, check_btable=False):
 

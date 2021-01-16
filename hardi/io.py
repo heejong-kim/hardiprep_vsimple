@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jan 10 09:54:45 2015
 
+Created on Sat Jan 10 10:38:34 2015
 @author: Shireen Elhabian
+
+Modified as hardi_vsimple Dec 21 2020
+@author: Heejong Kim
 
 objective:
     utitlity functions for io to be used in the processing pipeline

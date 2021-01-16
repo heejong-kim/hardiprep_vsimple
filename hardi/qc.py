@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jan 10 10:00:22 2015
-
 @author: Shireen Elhabian
+
+Modified on Tue Feb 5 2019
+@author: Heejong Kim & Edouard Mior
+
+Modified as hardi_vsimple Dec 21 2020
+@author: Heejong Kim
+
 """
+
+
 from __future__ import division
 import os
 import glob
@@ -12,9 +20,6 @@ import ntpath
 import time
 import shutil
 import copy
-import csv
-import math
-import sys
 
 import nibabel as nib
 import hardi.io as hardiIO
@@ -25,10 +30,7 @@ import hardi.qc_utils as hardiQCUtils
 import dipy.reconst.shm as drecon
 from dipy.core.gradients import gradient_table
 from dipy.reconst.shore import ShoreModel, shore_matrix
-from dipy.reconst.shm import sh_to_sf
-import dipy.reconst.dti as dti
 from dipy.io.gradients import read_bvals_bvecs
-# To deal with os.system does not wait for the process
 import subprocess
 
 

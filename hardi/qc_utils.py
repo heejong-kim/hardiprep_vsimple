@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jan 10 10:38:34 2015
 
+Created on Sat Jan 10 10:38:34 2015
 @author: Shireen Elhabian
 
+Modified on Tue Feb 5 2019
+@author: Heejong Kim & Edouard Mior
+
+Modified as hardi_vsimple Dec 21 2020
+@author: Heejong Kim
+
 QC utilities to be called from qc
+
 """
 
 from __future__ import division
