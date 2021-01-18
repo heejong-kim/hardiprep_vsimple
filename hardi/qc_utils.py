@@ -35,7 +35,7 @@ import csv
 from dipy.tracking import utils
 from dipy.tracking import metrics
 import scipy.optimize
-
+import matplotlib.pyplot as plt
 
 # To deal with os.system does not wait for the process
 import subprocess
@@ -901,10 +901,12 @@ def extractBrainRegionDWI(dwiFilename):
                 fslBet.inputs.frac = 0.4  # fractional intensity threshold (0->1); default=0.5; smaller values give larger brain outline estimates
                 betInterface = fslBet.run()
 
+
     fslmergebase = fbase + '_masked'
-    fslmergecommand = 'fslmerge -t {} {}'.format(fslmergebase, fcollect)
-    subprocess.Popen(fslmergecommand,
-                     shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
+    if not os.path.exists(fslmergebase+'.nii.gz'):
+        fslmergecommand = 'fslmerge -t {} {}'.format(fslmergebase, fcollect)
+        subprocess.Popen(fslmergecommand,
+                         shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 
     return fslmergebase+'.nii.gz'
 
@@ -1309,3 +1311,85 @@ def getValuesInMaskPixels(valueImage, mask):
     indValues = [valueImage[indices[i][0],indices[i][1]] for i in range(0,nPixels)]
 
     return indValues;
+
+
+
+def create_group_fig(img_list, num_row, cmaps, titles, resize=True, save_name=None, fig_size=[15,15],
+                     vmin=None, vmax=None,
+                     dpi=100, format='eps'):
+    """
+    :param summarywriter: tensorboard summary writer handle
+    :param step:
+    :param board_name: display name
+    :param img_list: a list of images to show
+    :param num_row: specify the number of row
+    :param cmaps: specify color maps for each image ('gray' for MRI, i.e.)
+    :param titles: specify each image title
+    :param resize: whether resize the image to show
+    :return:
+    """
+    plt.rcParams['figure.figsize'] = fig_size
+    fig = plt.figure()
+    num_figs = len(img_list)
+    num_col = np.ceil(num_figs / num_row)
+    #print('Visualizing %d images in %d row %d column' % (num_figs, num_row, num_col))
+    for i in range(num_figs):
+        ax = plt.subplot(num_row, num_col, i + 1)
+        if resize:
+            tmp = cv2.resize(img_list[i], (256, 256))
+        else:
+            tmp = img_list[i]
+        #print(tmp.shape)
+        if isinstance(cmaps, str):
+            c = cmaps
+        else:
+            c = cmaps[i]
+
+        if 'seg' in titles[i]:
+            v_min, v_max = 0, 3
+        else:
+            if vmax is not None:
+                if isinstance(vmax, list): v_min, v_max = vmin[i], vmax[i]
+                else: v_min, v_max = vmin, vmax
+            #elif tmp.max() <=1:
+            #    v_max = 1.
+            #    if tmp.min() < 0: v_min = -1.
+            #    else:v_min = 0.
+            else:
+                v_min, v_max = tmp.min(), tmp.max()
+        #print(v_min, v_max)
+        ax.imshow(tmp, cmap=c, vmin=v_min, vmax=v_max), plt.title(titles[i]), plt.axis('off')
+
+    if save_name:
+        if dpi:
+            plt.savefig(save_name,  format=format, dpi=dpi)
+        else:
+            plt.savefig(save_name, format=format)
+
+    return fig
+
+def visualize_dwis(dwifname,save_folder,id_agegroup):
+    I = np.asarray(nib.load(dwifname).dataobj)
+    b0 = I[:, :, :, 0]
+    dwis = I[:, :, :, 1:]
+    sid = np.array(range(I.shape[-1]-1))
+    slice_ = int(dwis.shape[-2]/2)
+    #b0_slice = b0[:,::-1,slice_].transpose()
+    b0_slice = b0[:,:,slice_].transpose()
+    mask = (b0_slice > 0.)
+    img_list = [b0_slice] + [dwis[:,:,slice_,i].transpose() for i in sid]
+    img_list_dif = [b0_slice] + [(b0_slice - dwis[:,:,slice_,i].transpose()) for i in sid]
+    titles = ['b0']+[str(i) for i in sid]
+    img_name = os.path.join(save_folder, '%s_s%s.svg'%(id_agegroup, slice_))
+    create_group_fig(img_list, num_row=8, cmaps='gist_gray',
+                     titles=titles, resize=False, save_name=img_name, fig_size=[16,9],
+                     vmin=None, vmax=None,
+                     dpi=200, format='svg')
+    img_name2 = os.path.join(save_folder, '%s_s%s_dif.svg'%(id_agegroup, slice_))
+    create_group_fig(img_list_dif, num_row=8, cmaps='jet',
+                     titles=titles, resize=False, save_name=img_name2, fig_size=[16,9],
+                     vmin=None, vmax=None,
+                     dpi=200, format='svg')
+    return
+
+

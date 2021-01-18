@@ -228,7 +228,7 @@ def writebtable(btablefilename, bvals, bvecs, isbvaluelast=False):
     fid.close()
     
 def nifti2src(niifilename, btablefilename, srcfilename): 
-    cmdStr = '/media/HDD2T/utils/dsistudio/dsi-studio-2018/build/dsi_studio --action=src --source=%s --b_table=%s --output=%s' % (niifilename, btablefilename, srcfilename)
+    cmdStr = 'dsi_studio --action=src --source=%s --b_table=%s --output=%s' % (niifilename, btablefilename, srcfilename)
     os.system(cmdStr)
 
 

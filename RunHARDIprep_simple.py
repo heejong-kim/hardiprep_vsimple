@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     local = '/home/heejong/server/oak_research/'
     server = '/research/vidaimaging/projects/'
-    localorserver = server
+    localorserver = local
 
     # IBIS_DTI65_Data_nrrd: Total image 494 / ID-agegroup: 465
     dir_nrrd = localorserver+'Autism/IBIS_DTI65_Data_nrrd/'
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     xmlfilename = './IBIS_DTIPrep_PROTOCOL_simple.xml'
 
 
-    for sidx in range(len(nrrd_idgroups)):
+    for sidx in reversed(range(200)):
 
         print("=======================")
         print(" {} out of {} ".format(sidx, len(nrrd_idgroups)))

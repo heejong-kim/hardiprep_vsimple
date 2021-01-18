@@ -1686,7 +1686,7 @@ def BrainMaskDWIBaselineReferenceMotionCorrectedDWIupdate(prepDir, phan_name, re
         recfilename = glob.glob(srcfilename_MC_masked+'.*')
         # if len(recfilename) == 0:
         # method 0:DSI, 1:DTI, 2:Funk-Randon QBI, 3:Spherical Harmonic QBI, 4:GQI 6: Convert to HARDI 7:QSDR.
-        cmdcheckbtable ='dsistudio --action=rec --source={} --method=1 --check_btable={}'.format(srcfilename_MC_masked, check_btable)
+        cmdcheckbtable ='dsi_studio --action=rec --source={} --method=1 --check_btable={}'.format(srcfilename_MC_masked, check_btable)
         subprocess.Popen(cmdcheckbtable,
                          shell=True).wait()  # subprocess.Popen() is strict superset of os.system().
 

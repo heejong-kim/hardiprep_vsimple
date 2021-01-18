@@ -7,18 +7,20 @@ import numpy as np
 import ntpath
 import time
 
+import matplotlib.pyplot as plt
+import nibabel as nib
+
 import subprocess
 from dipy.io.gradients import read_bvals_bvecs
 
 import nrrd
 import hardi.io as hardiIO
 import hardi.qc as hardiQC
+import hardi.qc_utils as hardiQCutils
 
 import argparse
 
-
 import pandas as pd
-
 
 
 if __name__ == "__main__":
@@ -33,7 +35,7 @@ if __name__ == "__main__":
     nrrd_idgroups = glob.glob(dir_nrrd + '*/*')
     dir_output = localorserver + 'Autism/output_hardiprep_simple/'
 
-    metric_file = dir_output+'dataset-report-nrrd-final2.tsv'
+    metric_file = dir_output+'dataset-report-after-hardiprep-simple.tsv'
 
 
 
@@ -62,7 +64,7 @@ if __name__ == "__main__":
 
         suffnrrd = '/mri/native/DTI65/NrrdOrig/ibis_'
         origNrrdfilename = os.path.join(dir_nrrd, ID+'/'+time) + suffnrrd + ID + '_'+time+'_DTI65_001.nrrd'
-        outDir = os.path.join(local+'Autism/output_hardiprep_simple/', ID+'/'+time)
+        outDir = os.path.join(localorserver+'Autism/output_hardiprep_simple/', ID+'/'+time)
         nDirections = int(65)
         prepDir_suffix = 'SHORE'
         resampling_method = 'shore'
@@ -92,12 +94,21 @@ if __name__ == "__main__":
                 nDirections, idagegroup, nDirections))
             fibcheck = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir.*.fib.gz' % (
                 nDirections, idagegroup, nDirections))
-            fibfinalcheck = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_DWIGeometricMean_MCFLIRT6DOF_masked.src.gz.dti.fib.gz' % (
+            # Old version
+            # fibfinalcheck = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_DWIGeometricMean_MCFLIRT6DOF_masked.src.gz.dti.fib.gz' % (
+            #     nDirections, idagegroup, nDirections))
+            # qced_filename = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_DWIGeometricMean_MCFLIRT6DOF_masked.nrrd' % (
+            #     nDirections, idagegroup, nDirections))
+            # motionqcfname = os.path.join(prepDir,
+            #                              'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_DWIGeometricMean_MCFLIRT6DOF_QCreport.txt' % (
+            #                                  nDirections, idagegroup, nDirections))
+            # New version
+            fibfinalcheck = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_Baseline_ANTsRIGID_masked.src.gz.dti.fib.gz' % (
                 nDirections, idagegroup, nDirections))
-            qced_filename = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_DWIGeometricMean_MCFLIRT6DOF_masked.nrrd' % (
+            qced_filename = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_Baseline_ANTsRIGID_masked.nrrd' % (
                 nDirections, idagegroup, nDirections))
             motionqcfname = os.path.join(prepDir,
-                                         'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_DWIGeometricMean_MCFLIRT6DOF_QCreport.txt' % (
+                                         'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_Baseline_ANTsRIGID_QCreport.txt' % (
                                              nDirections, idagegroup, nDirections))
 
             no_baseline = os.path.exists(os.path.join(prepDir, 'DWI_%ddir/nobaseline' % (nDirections)))
@@ -150,7 +161,7 @@ if __name__ == "__main__":
                     bvector_flip_last = glob.glob(fibfinalcheck)[1].split('.')[-4] if glob.glob(fibfinalcheck)[1].split('.')[
                                                                                   -4] != 'gz' else False
                 else:
-                    bvector_flip_first = glob.glob(fibcheck)[0].split('.')[-4] if glob.glob(fibcheck)[0].split('.')[
+                    bvector_flip_last = glob.glob(fibcheck)[0].split('.')[-4] if glob.glob(fibcheck)[0].split('.')[
                                                                                       -4] != 'gz' else False
 
 
@@ -181,5 +192,46 @@ if __name__ == "__main__":
     report3 = report2[(report2.n_of_gradients_orig - report2.corrupted_gradients + report2.corrected_gradients - 1) > 64 * 0.7].reset_index()
     print("Final # of gradients is less than 70% of 64 gradients: {}".format(np.sum((report2.n_of_gradients_orig - report2.corrupted_gradients + report2.corrected_gradients - 1) < 64 * 0.7)))
 
-    # Visual check before bet image (all dwis one page)
+    report3 = report3.reset_index()
+    metric_file = dir_output + 'dataset-report-after-hardiprep-simple-usable.tsv'
+    report3.to_csv(metric_file)
+
+    new = report3['ID_agegroup'].str.split('_', n = 1, expand = True)
+    np.sum(new[1] == 'V24')
+
+    '''
+    Visualize result
+    '''
+    # get trk and visualize (raw)
+    vissavetrk = '/home/heejong/server/oak_research/Autism/output_hardiprep_simple/qc-trk-vis-after-hardiprep/'
+    vissaveraw = '/home/heejong/server/oak_research/Autism/output_hardiprep_simple/qc-raw-dwi-vis/'
+    nDirections = 65
+    prepDir_suffix = 'SHORE'
+    suffnrrd = '/mri/native/DTI65/NrrdOrig/ibis_'
+    for i in range(len(report3)):
+        idagegroup = report3.ID_agegroup[i]
+        ID, time = idagegroup.split('_')
+        outDir = os.path.join(localorserver+'Autism/output_hardiprep_simple/', ID+'/'+time)
+        prepDir = os.path.join(outDir, 'HARDIprep_QC_%s' % (prepDir_suffix))
+        # raw dwi vis
+        dwifname = os.path.join(prepDir, 'DWI_%ddir/%s_DWI_%ddir.nii' % (
+            nDirections, idagegroup, nDirections))
+        if len(glob.glob('dwifname+idagegroup*.svg')) == 0:
+            hardiQCutils.visualize_dwis(dwifname, vissaveraw, idagegroup)
+
+        # tractography vis
+        fibname = os.path.join(prepDir,
+                                     'DWI_%ddir/%s_DWI_%ddir_QCed_WithinGradientMotionQCed_ResampleSHORE_QCed_Baseline_ANTsRIGID_masked.src.gz.dti.fib.gz' % (
+                                         nDirections, idagegroup, nDirections))
+        tractname = fibname+'.trk'
+        commandtrk = 'dsi_studio --action=trk --source={} --fiber_count=2000 --fa_threshold=0.1 --step_size=0.5 ' \
+                     '--output={} --min_length=30 --max_length=200 --smoothing=1 --turning_angle=45'.format(
+            fibname, tractname)
+        commandunzip = 'gunzip ' + tractname + '.gz'
+        commandvis = 'dsi_studio --action=vis --source={} --track="{}" --cmd="save_3view_image,{}"'.format(fibname, tractname,vissavetrk+idagegroup+'.jpg')
+        if not os.path.exists(tractname):
+            os.system(commandtrk)
+            os.system(commandunzip)
+        if not os.path.exists(vissavetrk+idagegroup+'.jpg'):
+            os.system(commandvis)
 
